@@ -47,7 +47,7 @@ def main(page: ft.Page):
     if is_mobile_or_web:
         try:
             audio_player = fta.Audio(autoplay=False)
-            page.overlay.append(audio_player)
+            page.add(audio_player)
         except:
             pass
 
