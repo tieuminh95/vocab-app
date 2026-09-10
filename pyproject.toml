@@ -1,0 +1,7 @@
+[project]
+name = "vocab-app"
+version = "1.0.0"
+dependencies = [
+    "flet",
+    "flet-audio"
+]
