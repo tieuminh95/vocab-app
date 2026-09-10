@@ -1,2 +1,2 @@
 flet
-flet_audio
+flet-audio
