@@ -1,4 +1,5 @@
 import flet as ft
+import flet_audio
 import flet_audio as fta
 import sqlite3
 import random
