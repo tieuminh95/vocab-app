@@ -7,9 +7,28 @@ import time
 import threading
 import os
 import tempfile
+import shutil
+
+def get_db_path():
+    base_dir = os.path.dirname(__file__)
+    bundled_db = os.path.join(base_dir, "vocab.db")
+    home_dir = os.path.expanduser("~")
+    writable_db = os.path.join(home_dir, "vocab.db")
+    
+    if not os.path.exists(writable_db):
+        try:
+            shutil.copy2(bundled_db, writable_db)
+        except Exception:
+            pass
+            
+    if os.access(writable_db, os.W_OK):
+        return writable_db
+    return bundled_db
+
+DB_PATH = get_db_path()
 
 def get_words():
-    conn = sqlite3.connect("vocab.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT id, word, meaning, example FROM words ORDER BY id DESC")
     words = cursor.fetchall()
@@ -369,7 +388,7 @@ def main(page: ft.Page):
         
     def import_data(e):
         if not txt_data.value: return
-        conn = sqlite3.connect("vocab.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         count = 0
         for line in txt_data.value.split(chr(10)):
