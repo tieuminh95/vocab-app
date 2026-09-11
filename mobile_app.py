@@ -1,4 +1,5 @@
 import flet as ft
+import flet_audio
 import sqlite3
 import random
 import urllib.parse
