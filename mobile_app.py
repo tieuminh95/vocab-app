@@ -51,11 +51,15 @@ def main(page: ft.Page):
             pass
 
     def play_sound(text, lang="en"):
-        # Add timestamp to prevent caching issues and ensure Flet updates the src
-        url = f"https://translate.google.com/translate_tts?ie=UTF-8&q={urllib.parse.quote(text)}&tl={lang}&client=tw-ob&t={int(time.time() * 1000)}"
+        # Sử dụng client=gtx để không bị Google chặn do thiếu User-Agent trên mobile
+        url = f"https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl={lang}&q={urllib.parse.quote(text)}&t={int(time.time() * 1000)}"
         if audio_player:
             audio_player.src = url
             audio_player.update()
+            try:
+                audio_player.play()
+            except:
+                pass
         else:
             # Desktop fallback using pygame
             def _play():
