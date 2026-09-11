@@ -1,4 +1,5 @@
 import flet as ft
+import flet_audio
 import sqlite3
 import random
 import urllib.parse
@@ -42,7 +43,7 @@ def main(page: ft.Page):
     page.padding = 0
 
     # Sử dụng Audio của Flet cho mọi nền tảng (Desktop/Mobile)
-    audio_player = ft.Audio(autoplay=False)
+    audio_player = flet_audio.Audio(autoplay=False)
     page.overlay.append(audio_player)
 
     def play_sound(text, lang="en"):
