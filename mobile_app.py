@@ -1,5 +1,4 @@
 import flet as ft
-import flet_audio
 import sqlite3
 import random
 import urllib.parse
@@ -42,40 +41,19 @@ def main(page: ft.Page):
     page.window_height = 800
     page.padding = 0
 
-    is_mobile_or_web = page.web or page.platform in [ft.PagePlatform.ANDROID, ft.PagePlatform.IOS]
-    audio_player = None
+    # Sử dụng Audio của Flet cho mọi nền tảng (Desktop/Mobile)
+    audio_player = ft.Audio(autoplay=False)
+    page.overlay.append(audio_player)
 
     def play_sound(text, lang="en"):
-        nonlocal audio_player
-        url = f"https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl={lang}&q={urllib.parse.quote(text)}&t={int(time.time() * 1000)}"
-        
-        if is_mobile_or_web:
-            try:
-                if audio_player and audio_player in page.overlay:
-                    page.overlay.remove(audio_player)
-                audio_player = ft.Audio(src=url, autoplay=True)
-                page.overlay.append(audio_player)
-                page.update()
-            except Exception as e:
-                pass
-        else:
-            # Desktop fallback using pygame
-            def _play():
-                try:
-                    import pygame
-                    import urllib.request
-                    pygame.mixer.init()
-                    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                    with urllib.request.urlopen(req) as response:
-                        data = response.read()
-                    temp_path = os.path.join(tempfile.gettempdir(), f"vocab_tts_{random.randint(1,10000)}.mp3")
-                    with open(temp_path, "wb") as f:
-                        f.write(data)
-                    pygame.mixer.music.load(temp_path)
-                    pygame.mixer.music.play()
-                except Exception as e:
-                    print("Lỗi phát âm thanh:", e)
-            threading.Thread(target=_play, daemon=True).start()
+        try:
+            url = f"https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl={lang}&q={urllib.parse.quote(text)}&t={int(time.time() * 1000)}"
+            audio_player.src = url
+            audio_player.update()
+            audio_player.play()
+        except Exception as e:
+            print("Lỗi phát âm thanh:", e)
+
 
     all_words = get_words()
 
