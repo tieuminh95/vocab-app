@@ -1,6 +1,4 @@
 import flet as ft
-import flet_audio
-import flet_audio as fta
 import sqlite3
 import random
 import urllib.parse
@@ -47,7 +45,7 @@ def main(page: ft.Page):
     audio_player = None
     if is_mobile_or_web:
         try:
-            audio_player = fta.Audio(autoplay=False)
+            audio_player = ft.Audio(autoplay=False)
             page.add(audio_player)
         except:
             pass
