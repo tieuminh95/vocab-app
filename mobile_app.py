@@ -45,26 +45,26 @@ def main(page: ft.Page):
     audio_player = None
     if is_mobile_or_web:
         try:
-            audio_player = ft.Audio(autoplay=False)
-            page.add(audio_player)
-        except:
-            pass
-    is_mobile_or_web = page.web or page.platform in [ft.PagePlatform.ANDROID, ft.PagePlatform.IOS]
-    audio_player = None
-    if is_mobile_or_web:
-        try:
             audio_player = ft.Audio(autoplay=True, src="")
             page.overlay.append(audio_player)
         except:
             pass
 
     def play_sound(text, lang="en"):
-        # Thêm timestamp để url luôn mới, tránh cache và trigger lại autoplay
+        # Add timestamp to prevent caching issues and ensure Flet updates the src
         url = f"https://translate.google.com/translate_tts?ie=UTF-8&q={urllib.parse.quote(text)}&tl={lang}&client=tw-ob&t={int(time.time() * 1000)}"
         if audio_player:
             audio_player.src = url
             audio_player.update()
         else:
+            # Desktop fallback using pygame
+            def _play():
+                try:
+                    import pygame
+                    import urllib.request
+                    pygame.mixer.init()
+                    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(req) as response:
                         data = response.read()
                     temp_path = os.path.join(tempfile.gettempdir(), f"vocab_tts_{random.randint(1,10000)}.mp3")
                     with open(temp_path, "wb") as f:
