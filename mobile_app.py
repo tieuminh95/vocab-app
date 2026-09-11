@@ -43,22 +43,19 @@ def main(page: ft.Page):
 
     is_mobile_or_web = page.web or page.platform in [ft.PagePlatform.ANDROID, ft.PagePlatform.IOS]
     audio_player = None
-    if is_mobile_or_web:
-        try:
-            audio_player = ft.Audio(autoplay=True, src="")
-            page.overlay.append(audio_player)
-        except:
-            pass
 
     def play_sound(text, lang="en"):
-        # Sử dụng client=gtx để không bị Google chặn do thiếu User-Agent trên mobile
+        nonlocal audio_player
         url = f"https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl={lang}&q={urllib.parse.quote(text)}&t={int(time.time() * 1000)}"
-        if audio_player:
-            audio_player.src = url
-            audio_player.update()
+        
+        if is_mobile_or_web:
             try:
-                audio_player.play()
-            except:
+                if audio_player and audio_player in page.overlay:
+                    page.overlay.remove(audio_player)
+                audio_player = ft.Audio(src=url, autoplay=True)
+                page.overlay.append(audio_player)
+                page.update()
+            except Exception as e:
                 pass
         else:
             # Desktop fallback using pygame
